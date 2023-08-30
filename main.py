@@ -2,19 +2,32 @@ from aiogram import Bot, types, Dispatcher, executor
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 TOKEN = "5932068156:AAGVKlAxkakaG6amo8cf7dFPQCODZiBFNtQ"
-CHANNEL_ID = "@IvSUonTheRun"
-NOTSUB_MESSAGE = "Для доступа к функционалу бота неободиом подписаться на наш канал @IvSUonTheRun"
+
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
+
+CHANNEL_ID = "@IvSUonTheRun"
 
 async def on_startup(_):
     print("Всё готово, босс")
 
+def check_sub_channel(chat_member):
+    print(chat_member['status'])
+    if chat_member['status'] != 'left':
+        return True
+    else:
+        return False
+
 @dp.message_handler(commands=['start'])
 async def begin(message: types.Message):
-    caption_text = 'Привет, студент!\n\nУверены, что время учебы, научных открытий, творческих поисков, спортивных достижений, дружбы и любви - оставит в судьбе каждого из вас неизгладимый след. И ИвГУ предоставляет для этого все возможности.\nМы рады тому, что ты стал частью нашей дружной семьи с замечательными традициями, богатой историей и интересной студенческой жизнью, поэтому специально для тебя в этом чат-боте собрана информация, которая поможет быстрее освоиться и узнать про все возможности университета.\n\nЧем я могу тебе помочь?'
-    photo_url = 'https://ibb.co/QMLZm95'
-    await bot.send_photo(message.chat.id, photo=photo_url, caption=caption_text, reply_markup = keyboard)
+    if check_sub_channel(await bot.get_chat_member(chat_id=CHANNEL_ID, user_id=message.from_user.id)):
+        caption_text = 'Привет, студент!\n\nУверены, что время учебы, научных открытий, творческих поисков, спортивных достижений, дружбы и любви - оставит в судьбе каждого из вас неизгладимый след. И ИвГУ предоставляет для этого все возможности.\nМы рады тому, что ты стал частью нашей дружной семьи с замечательными традициями, богатой историей и интересной студенческой жизнью, поэтому специально для тебя в этом чат-боте собрана информация, которая поможет быстрее освоиться и узнать про все возможности университета.\n\nЧем я могу тебе помочь?'
+        photo_url = 'https://ibb.co/QMLZm95'
+        await bot.send_photo(message.chat.id, photo=photo_url, caption=caption_text, reply_markup = keyboard)
+
+    else: 
+        await bot.send_message(message.from_user.id, 'Для работы с ботом нужно быть подписанным на канал "ИвГУ | На бегу"')
+        await bot.send_message(message.from_user.id, 'https://t.me/IvSUonTheRun')
 
 keyboard = ReplyKeyboardMarkup(row_width= 1)
 but_1 = KeyboardButton(text='Информация об университете')
@@ -32,108 +45,113 @@ but_12 = KeyboardButton(text='Заказ справок')
 but_13 = KeyboardButton(text='Медицинский кабинет')
 
 keyboard.add(but_1, but_2, but_3, but_4, but_5, but_6, but_7, but_8, but_9, but_10, but_11, but_12, but_13)
+        
 
 @dp.message_handler(content_types=['text'])
 async def test(message: types.Message):
-    if(message.text == "Информация об университете"):
-        keyb2 = InlineKeyboardMarkup(row_width=1)
-        butt1 = InlineKeyboardButton("Ректорат", callback_data='rectorat')
-        butt2 = InlineKeyboardButton('Институт математики, информационных технологий и естественных наук', callback_data='mat')
-        butt3 = InlineKeyboardButton("Институт гуманитарных наук", callback_data='gum')
-        butt4 = InlineKeyboardButton("Институт социально-экономических наук", callback_data='soc')
-        butt5 = InlineKeyboardButton("Юридический факультет", callback_data='urf')
-        keyb2.add(butt1, butt2, butt3, butt4, butt5,)
-        await bot.send_message(message.chat.id,text = "Что вас интересует?", reply_markup=keyb2)
-    elif (message.text == "Навигация по университету"):
-        keyb3 = InlineKeyboardMarkup(row_width=1)
-        butt1 = InlineKeyboardButton("1 учебный корпус", callback_data='1')
-        butt2 = InlineKeyboardButton("2 учебный корпус", callback_data='2')
-        butt3 = InlineKeyboardButton("3 учебный корпус", callback_data='3')
-        butt4 = InlineKeyboardButton("6 учебный корпус", callback_data='6')
-        butt5 = InlineKeyboardButton("8 учебный корпус", callback_data='8')
-        butt6 = InlineKeyboardButton("Виварий", callback_data='viv')
-        keyb3.add(butt1, butt2, butt3, butt4, butt5, butt6)
-        await bot.send_message(message.chat.id, text='Вы нажали кнопку навигации. Чтобы не потеряться в нашем университете, выберите учебный корпус, который Вас интересует:', reply_markup=keyb3)
+    if check_sub_channel(await bot.get_chat_member(chat_id=CHANNEL_ID, user_id=message.from_user.id)):
+        if(message.text == "Информация об университете"):
+            keyb2 = InlineKeyboardMarkup(row_width=1)
+            butt1 = InlineKeyboardButton("Ректорат", callback_data='rectorat')
+            butt2 = InlineKeyboardButton('Институт математики, информационных технологий и естественных наук', callback_data='mat')
+            butt3 = InlineKeyboardButton("Институт гуманитарных наук", callback_data='gum')
+            butt4 = InlineKeyboardButton("Институт социально-экономических наук", callback_data='soc')
+            butt5 = InlineKeyboardButton("Юридический факультет", callback_data='urf')
+            keyb2.add(butt1, butt2, butt3, butt4, butt5,)
+            await bot.send_message(message.chat.id,text = "Что вас интересует?", reply_markup=keyb2)
+        elif (message.text == "Навигация по университету"):
+            keyb3 = InlineKeyboardMarkup(row_width=1)
+            butt1 = InlineKeyboardButton("1 учебный корпус", callback_data='1')
+            butt2 = InlineKeyboardButton("2 учебный корпус", callback_data='2')
+            butt3 = InlineKeyboardButton("3 учебный корпус", callback_data='3')
+            butt4 = InlineKeyboardButton("6 учебный корпус", callback_data='6')
+            butt5 = InlineKeyboardButton("8 учебный корпус", callback_data='8')
+            butt6 = InlineKeyboardButton("Виварий", callback_data='viv')
+            keyb3.add(butt1, butt2, butt3, butt4, butt5, butt6)
+            await bot.send_message(message.chat.id, text='Вы нажали кнопку навигации. Чтобы не потеряться в нашем университете, выберите учебный корпус, который Вас интересует:', reply_markup=keyb3)
 
-    elif (message.text == "Электронно-пропускная система ИвГУ"):
-        await bot.send_message(message.chat.id, text = 'Дорогой студент, помни: вход в учебные корпуса и общежития ИвГУ осуществляется строго по электронному пропуску, который тебе выдали на 1 курсе. \n<b>В случае утери электронного пропуска</b>, тебе нужно обратиться в 268 кабинет 3 учебного корпуса ИвГУ (ул. Ермака д.39) для его восстановления.\n\nРежим работы: пн-пт с 9:00 до 16:00\nОбед: с 12:00 до 13:00',parse_mode="html")
+        elif (message.text == "Электронно-пропускная система ИвГУ"):
+            await bot.send_message(message.chat.id, text = 'Дорогой студент, помни: вход в учебные корпуса и общежития ИвГУ осуществляется строго по электронному пропуску, который тебе выдали на 1 курсе. \n<b>В случае утери электронного пропуска</b>, тебе нужно обратиться в 268 кабинет 3 учебного корпуса ИвГУ (ул. Ермака д.39) для его восстановления.\n\nРежим работы: пн-пт с 9:00 до 16:00\nОбед: с 12:00 до 13:00',parse_mode="html")
 
-    elif (message.text == "Дополнительное образование"):
-        caption_text = 'Институт профессионального развития ИвГУ\nПомогаем расти в профессии и открывать для себя новое!\nУ нас есть:\n- 41 программа повышения квалификации;\n- 43 программы профессиональной переподготовки\n- профессиональная подготовка к ОГЭ/ЕГЭ в рамках университетского лицея;\n- обучение иностранным языкам, как детей, так и взрослых, лучшими специалистами, лично посетившимистраны зарубежья.\nПрограммы охватывают все сферы жизни общества. По окончании обучения выдается документустановленного образца.\nДиректор Института: Елена Валерьевна Мельникова, https://ivanovo.ac.ru/about_the_university/employees/523/\nПо всем вопросам просим обращаться на почту: ipr@ivanovo.ac.ru\nТелефон для справок: +7 (4932) 93-94-77\nВК: https://vk.com/iprivgu'
-        photo_url = 'https://ibb.co/7V2bn8z'
-        await bot.send_photo(message.chat.id, photo=photo_url, caption=caption_text)
+        elif (message.text == "Дополнительное образование"):
+            caption_text = 'Институт профессионального развития ИвГУ\nПомогаем расти в профессии и открывать для себя новое!\nУ нас есть:\n- 41 программа повышения квалификации;\n- 43 программы профессиональной переподготовки\n- профессиональная подготовка к ОГЭ/ЕГЭ в рамках университетского лицея;\n- обучение иностранным языкам, как детей, так и взрослых, лучшими специалистами, лично посетившимистраны зарубежья.\nПрограммы охватывают все сферы жизни общества. По окончании обучения выдается документустановленного образца.\nДиректор Института: Елена Валерьевна Мельникова, https://ivanovo.ac.ru/about_the_university/employees/523/\nПо всем вопросам просим обращаться на почту: ipr@ivanovo.ac.ru\nТелефон для справок: +7 (4932) 93-94-77\nВК: https://vk.com/iprivgu'
+            photo_url = 'https://ibb.co/7V2bn8z'
+            await bot.send_photo(message.chat.id, photo=photo_url, caption=caption_text)
 
-    elif (message.text == "Стипендии и меры социальной поддержки"):
-        keyb6 = InlineKeyboardMarkup(row_width=1)
-        butt1 = InlineKeyboardButton("Государственная академическая стипендия студентам", callback_data='st1')
-        butt2 = InlineKeyboardButton('Государственная социальная стипендия студентам', callback_data='st2')
-        butt3 = InlineKeyboardButton('Государственные стипендии аспирантам', callback_data='st3')
-        butt4 = InlineKeyboardButton('Стипендии Президента Российской Федерации и стипендии Правительства Российской Федерации', callback_data='st4')
-        butt5 = InlineKeyboardButton('Именные стипендии', callback_data='st5')
-        butt6 = InlineKeyboardButton('Материальная помощь', callback_data='matpom')
-        keyb6.add(butt1, butt2, butt3, butt4, butt5, butt6)
-        await bot.send_message(message.chat.id, text='Учеба - это тоже работа! И эту работу мы готовы поощрять в виде стипендий. В нашем университете ты можешь получить следующие стипендии. Выбери из существующих, чтобы узнать подробнее', reply_markup=keyb6)
+        elif (message.text == "Стипендии и меры социальной поддержки"):
+            keyb6 = InlineKeyboardMarkup(row_width=1)
+            butt1 = InlineKeyboardButton("Государственная академическая стипендия студентам", callback_data='st1')
+            butt2 = InlineKeyboardButton('Государственная социальная стипендия студентам', callback_data='st2')
+            butt3 = InlineKeyboardButton('Государственные стипендии аспирантам', callback_data='st3')
+            butt4 = InlineKeyboardButton('Стипендии Президента Российской Федерации и стипендии Правительства Российской Федерации', callback_data='st4')
+            butt5 = InlineKeyboardButton('Именные стипендии', callback_data='st5')
+            butt6 = InlineKeyboardButton('Материальная помощь', callback_data='matpom')
+            keyb6.add(butt1, butt2, butt3, butt4, butt5, butt6)
+            await bot.send_message(message.chat.id, text='Учеба - это тоже работа! И эту работу мы готовы поощрять в виде стипендий. В нашем университете ты можешь получить следующие стипендии. Выбери из существующих, чтобы узнать подробнее', reply_markup=keyb6)
 
-    elif(message.text == "Студенческие объединения"):
-        keyb = InlineKeyboardMarkup(row_width=1)
-        butt1 = InlineKeyboardButton("КОСС", callback_data='koss')
-        butt2 = InlineKeyboardButton('Клуб "Импульс"', callback_data='imp')
-        butt3 = InlineKeyboardButton('Клуб "Я горжусь!"', callback_data='gor')
-        butt4 = InlineKeyboardButton('Профком', callback_data='prof')
-        butt5 = InlineKeyboardButton('РДДМ', callback_data='rddm')
-        keyb.add(butt1, butt2, butt3, butt4, butt5)
-        await bot.send_message(message.chat.id,text='Выберите интересующее Вас студенческое объединение', reply_markup=keyb)
+        elif(message.text == "Студенческие объединения"):
+            keyb = InlineKeyboardMarkup(row_width=1)
+            butt1 = InlineKeyboardButton("КОСС", callback_data='koss')
+            butt2 = InlineKeyboardButton('Клуб "Импульс"', callback_data='imp')
+            butt3 = InlineKeyboardButton('Клуб "Я горжусь!"', callback_data='gor')
+            butt4 = InlineKeyboardButton('Профком', callback_data='prof')
+            butt5 = InlineKeyboardButton('РДДМ', callback_data='rddm')
+            keyb.add(butt1, butt2, butt3, butt4, butt5)
+            await bot.send_message(message.chat.id,text='Выберите интересующее Вас студенческое объединение', reply_markup=keyb)
 
-    elif(message.text == 'Центр "Карьера"'):
-        keyb1 = InlineKeyboardMarkup(row_width=1)
-        button1 = InlineKeyboardButton("Записаться на 'Карьерные пятницы'", url = 'https://disk.yandex.ru/edit/d/6gTawe2afczVWoCekW96WSPegnqahzm72s0qoIz-cKg6SjZPcXR6OW5YUQ')
-        button2 = InlineKeyboardButton("Записаться на экскурсию", url = 'https://forms.yandex.ru/u/64cc95002530c26ecd587898/')
-        button3 = InlineKeyboardButton("Стать амбассадором карьеры", url ='https://forms.yandex.ru/u/64cca0cd43f74f7a1d95c278/')
-        keyb1.add(button1, button2, button3)
-        await bot.send_message(message.chat.id, text='<b>Центр "Карьера" ИвГУ</b> \nЦентр профессиональной ориентации и содействия трудоустройству выпускников "Карьера" ИвГУ - мы знаем о трудоустройстве всё!\n- размещаем вакансии и стажировки\n- проводим групповые и индивидуальные консультации по трудоустройству "Карьерные пятницы"\n- устраиваем экскурсии в компании,\n- проводим ярмарки вакансий и много других карьерных мероприятий\n\nКоробова Ольга Олеговна - начальник Центра профессирнальной ориентации и содействия трудоустройству выпускников ИвГУ "Карьера"\nАдрес: ул.Ермака, 39 (3 корпус ИвГУ), 158 кабинет\nРежим работы: пн–пт 8:30–17:00\nВК: https://vk.com/career.ivsu \nФакультетус: https://facultetus.ru/ivsu\nТелефон: +7 (4932) 32-94-00\nE-mail: career@ivanovo.ac.ru',reply_markup=keyb1, parse_mode= "html")
+        elif(message.text == 'Центр "Карьера"'):
+            keyb1 = InlineKeyboardMarkup(row_width=1)
+            button1 = InlineKeyboardButton("Записаться на 'Карьерные пятницы'", url = 'https://disk.yandex.ru/edit/d/6gTawe2afczVWoCekW96WSPegnqahzm72s0qoIz-cKg6SjZPcXR6OW5YUQ')
+            button2 = InlineKeyboardButton("Записаться на экскурсию", url = 'https://forms.yandex.ru/u/64cc95002530c26ecd587898/')
+            button3 = InlineKeyboardButton("Стать амбассадором карьеры", url ='https://forms.yandex.ru/u/64cca0cd43f74f7a1d95c278/')
+            keyb1.add(button1, button2, button3)
+            await bot.send_message(message.chat.id, text='<b>Центр "Карьера" ИвГУ</b> \nЦентр профессиональной ориентации и содействия трудоустройству выпускников "Карьера" ИвГУ - мы знаем о трудоустройстве всё!\n- размещаем вакансии и стажировки\n- проводим групповые и индивидуальные консультации по трудоустройству "Карьерные пятницы"\n- устраиваем экскурсии в компании,\n- проводим ярмарки вакансий и много других карьерных мероприятий\n\nКоробова Ольга Олеговна - начальник Центра профессирнальной ориентации и содействия трудоустройству выпускников ИвГУ "Карьера"\nАдрес: ул.Ермака, 39 (3 корпус ИвГУ), 158 кабинет\nРежим работы: пн–пт 8:30–17:00\nВК: https://vk.com/career.ivsu \nФакультетус: https://facultetus.ru/ivsu\nТелефон: +7 (4932) 32-94-00\nE-mail: career@ivanovo.ac.ru',reply_markup=keyb1, parse_mode= "html")
 
-    elif(message.text == "Служба психологической поддержки"):
-        caption_text = 'Студент, раз ты обратился в этот раздел, скорее всего, тебя что-то тревожит. Мы понимаем, что в жизни каждого есть достаточно тем, которые могут беспокоить, и мы готовы помочь разобраться со всеми. \nВ ИвГУ есть <b>Центр психологической поддержки</b>, любой студент может записаться на индивидуальную консультацию, написав на почту, указанную ниже или в личные сообщения сообщества.\nТакже работает телефон доверия, на который можно позвонить и выговориться в трудную минуту. \n\nСообщество ВК: https://vk.com/public220415924 \nПочта: psiholog.ivgu@yandex.ru\nТелефон доверия: +7 (996) 517-74-21 \nАдрес: ул. Ермака, 39, кабинет 276(3-й учебный корпус)'
-        photo_url = 'https://ie.wampi.ru/2023/07/24/RISUNOK1.jpg'
-        await bot.send_photo(message.chat.id, photo=photo_url, caption=caption_text, parse_mode="html")
+        elif(message.text == "Служба психологической поддержки"):
+            caption_text = 'Студент, раз ты обратился в этот раздел, скорее всего, тебя что-то тревожит. Мы понимаем, что в жизни каждого есть достаточно тем, которые могут беспокоить, и мы готовы помочь разобраться со всеми. \nВ ИвГУ есть <b>Центр психологической поддержки</b>, любой студент может записаться на индивидуальную консультацию, написав на почту, указанную ниже или в личные сообщения сообщества.\nТакже работает телефон доверия, на который можно позвонить и выговориться в трудную минуту. \n\nСообщество ВК: https://vk.com/public220415924 \nПочта: psiholog.ivgu@yandex.ru\nТелефон доверия: +7 (996) 517-74-21 \nАдрес: ул. Ермака, 39, кабинет 276(3-й учебный корпус)'
+            photo_url = 'https://ie.wampi.ru/2023/07/24/RISUNOK1.jpg'
+            await bot.send_photo(message.chat.id, photo=photo_url, caption=caption_text, parse_mode="html")
 
-    elif(message.text == "Наука"):
-        keba = InlineKeyboardMarkup(row_width=1)
-        button1 = InlineKeyboardButton("Научно-исследовательская деятельность ИвГУ", url = 'http://ivanovo.ac.ru/about_the_university/science/news/')
-        button2 = InlineKeyboardButton('Результаты научной работы студентов', url = 'http://ivanovo.ac.ru/about_the_university/science/students.php')
-        button3 = InlineKeyboardButton('Результаты научной работы студентов', url = 'http://ivanovo.ac.ru/about_the_university/science/conferences/conferences_ivsu.php')
-        button4 = InlineKeyboardButton('Актуальная информация по научным конференциям ИвГУ', url = 'https://vk.com/tboilivsu')
-        button5 = InlineKeyboardButton('Точка кипения на Лидер ID', url = 'https://leader-id.ru/places/6881')
-        keba.add(button1,button2,button3,button5,button4)
-        await bot.send_message(message.chat.id, text = 'Ивановский государственный университет реализует  фундаментальные и прикладные исследования по 19 научным направлениям. На базе ИвГУ действует 21 научно-образовательное объединение.\nНаши ученые ежегодно проводят интересные конференции и научные мероприятия, получают гранты на исследования и защищают диссертации. На базе ИвГУ сейчас действует три диссертационных совета, более ста молодых ученых учатся в аспирантуре.\nНаше издательство выпускает ряд серьезных научных изданий, имеющих международный статус.\nДля поддержания исследовательских традиций и реализации инновационных идей у нас есть Совет молодых ученых, который активно работает над тем, чтобы научная жизнь была  интересной и разнообразной! Уже со второго курса ты научишься уверенно выступать с докладами, разовьешь в себе проектные компетенции и укрепишь навыки креативной визуализации данных! У тебя также будет возможность получить научную стипендию, поучаствовать в конкурсах на лучшую научную работу и получить гранты Президента и Правительства РФ. Скорее присоединяйся к нашей семье!\nСмирнова Инна Николаевна – проректор по исследовательской и проектной деятельности\nПочта: smirnovain@ivanovo.ac.ru\nШаповалова Анастасия Сергеевна – главный специалист научно-исследовательского управления\nПочта: niu@ivanovo.ac.ru', reply_markup= keba)
+        elif(message.text == "Наука"):
+            keba = InlineKeyboardMarkup(row_width=1)
+            button1 = InlineKeyboardButton("Научно-исследовательская деятельность ИвГУ", url = 'http://ivanovo.ac.ru/about_the_university/science/news/')
+            button2 = InlineKeyboardButton('Результаты научной работы студентов', url = 'http://ivanovo.ac.ru/about_the_university/science/students.php')
+            button3 = InlineKeyboardButton('Результаты научной работы студентов', url = 'http://ivanovo.ac.ru/about_the_university/science/conferences/conferences_ivsu.php')
+            button4 = InlineKeyboardButton('Актуальная информация по научным конференциям ИвГУ', url = 'https://vk.com/tboilivsu')
+            button5 = InlineKeyboardButton('Точка кипения на Лидер ID', url = 'https://leader-id.ru/places/6881')
+            keba.add(button1,button2,button3,button5,button4)
+            await bot.send_message(message.chat.id, text = 'Ивановский государственный университет реализует  фундаментальные и прикладные исследования по 19 научным направлениям. На базе ИвГУ действует 21 научно-образовательное объединение.\nНаши ученые ежегодно проводят интересные конференции и научные мероприятия, получают гранты на исследования и защищают диссертации. На базе ИвГУ сейчас действует три диссертационных совета, более ста молодых ученых учатся в аспирантуре.\nНаше издательство выпускает ряд серьезных научных изданий, имеющих международный статус.\nДля поддержания исследовательских традиций и реализации инновационных идей у нас есть Совет молодых ученых, который активно работает над тем, чтобы научная жизнь была  интересной и разнообразной! Уже со второго курса ты научишься уверенно выступать с докладами, разовьешь в себе проектные компетенции и укрепишь навыки креативной визуализации данных! У тебя также будет возможность получить научную стипендию, поучаствовать в конкурсах на лучшую научную работу и получить гранты Президента и Правительства РФ. Скорее присоединяйся к нашей семье!\nСмирнова Инна Николаевна – проректор по исследовательской и проектной деятельности\nПочта: smirnovain@ivanovo.ac.ru\nШаповалова Анастасия Сергеевна – главный специалист научно-исследовательского управления\nПочта: niu@ivanovo.ac.ru', reply_markup= keba)
 
-    elif(message.text == "Информация для иностранных студентов"):
-        keyb12 = InlineKeyboardMarkup(row_width=1)
-        button1 = InlineKeyboardButton("Центр русистики и международного образования", callback_data='centr')
-        button2 = InlineKeyboardButton("Международный офис", callback_data='ofis')
-        button3 = InlineKeyboardButton("Медицинское страхование", callback_data='med')
-        keyb12.add(button1, button2, button3)
-        await bot.send_message(message.chat.id, text='Привет, мой иностранный друг! Чем я могу тебе помочь?', reply_markup = keyb12)
+        elif(message.text == "Информация для иностранных студентов"):
+            keyb12 = InlineKeyboardMarkup(row_width=1)
+            button1 = InlineKeyboardButton("Центр русистики и международного образования", callback_data='centr')
+            button2 = InlineKeyboardButton("Международный офис", callback_data='ofis')
+            button3 = InlineKeyboardButton("Медицинское страхование", callback_data='med')
+            keyb12.add(button1, button2, button3)
+            await bot.send_message(message.chat.id, text='Привет, мой иностранный друг! Чем я могу тебе помочь?', reply_markup = keyb12)
 
-    elif (message.text == "Общежития"):
-        keyb4 = InlineKeyboardMarkup(row_width=1)
-        butt1 = InlineKeyboardButton("Жилищный отдел", callback_data='g')
-        butt2 = InlineKeyboardButton("Интернет в общежитие", callback_data='i')
-        butt3 = InlineKeyboardButton("Оплата за общежитие", callback_data='o')
-        keyb4.add(butt1, butt2, butt3)
-        await bot.send_message(message.chat.id, text='Ивановский государственный университет располагает тремя благоустроенными общежитиями, находящимися рядом с корпусами университета. Общежития отличаются уровнем комфортности и стоимостью проживания. Выбери кнопку для получения дополнительной информации.'
-                                                     '\n'' '
-                                                     '\n<b>Общежитие №1</b>\nАдрес: г. Иваново, ул. Тимирязева, д. 23\nКомендант общежития: Коровина Елена Геннадьевна\nТелефон вахты: +7 (4932) 37-47-02'
-                                                     '\n'' '
-                                                     '\n<b>Общежитие №3</b>\nАдрес: г. Иваново, ул. Смольная, д.48\nКомендант общежития: Рыбакова Татьяна Юрьевна\nТелефон вахты: +7 (4932) 32-10-43'
-                                                     '\n'' '
-                                                     '\n<b>Общежитие №4</b>\nАдрес: г. Иваново, ул. Мальцева, д.46\nКомендант общежития: Письменский Эдуард Анатольевич\nТелефон вахты: +7 (4932) 37-84-88', reply_markup=keyb4, parse_mode="html")
+        elif (message.text == "Общежития"):
+            keyb4 = InlineKeyboardMarkup(row_width=1)
+            butt1 = InlineKeyboardButton("Жилищный отдел", callback_data='g')
+            butt2 = InlineKeyboardButton("Интернет в общежитии", callback_data='i')
+            butt3 = InlineKeyboardButton("Оплата за общежитие", callback_data='o')
+            keyb4.add(butt1, butt2, butt3)
+            await bot.send_message(message.chat.id, text='Ивановский государственный университет располагает тремя благоустроенными общежитиями, находящимися рядом с корпусами университета. Общежития отличаются уровнем комфортности и стоимостью проживания. Выбери кнопку для получения дополнительной информации.'
+                                                        '\n'' '
+                                                        '\n<b>Общежитие №1</b>\nАдрес: г. Иваново, ул. Тимирязева, д. 23\nКомендант общежития: Коровина Елена Геннадьевна\nТелефон вахты: +7 (4932) 37-47-02'
+                                                        '\n'' '
+                                                        '\n<b>Общежитие №3</b>\nАдрес: г. Иваново, ул. Смольная, д.48\nКомендант общежития: Рыбакова Татьяна Юрьевна\nТелефон вахты: +7 (4932) 32-10-43'
+                                                        '\n'' '
+                                                        '\n<b>Общежитие №4</b>\nАдрес: г. Иваново, ул. Мальцева, д.46\nКомендант общежития: Письменский Эдуард Анатольевич\nТелефон вахты: +7 (4932) 37-84-88', reply_markup=keyb4, parse_mode="html")
 
-    elif (message.text == "Заказ справок"):
-          await bot.send_message(message.chat.id, text='- Заказ справки об обучении осуществляется через учебные офисы ИвГУ.\n- Заказ справки о доходах производится дистанционно по почте: 259ivgu@mail.ru\nВ письме для заказа правки нужно указать:\n1. ФИО\n2. институт/факультет, на котором вы обучаетесь\n3. Образовательную программу (допустим, 03.04.02 Физика)\n4. Курс\n5. Причина для заказа справки\n6. За какой период интересуют доходы (допустим, за последние 3 месяца)\n7. Количество копий\nСрок обработки запроса от 3-14 рабочих дней. После получения оповещения на почту о готовности справки, Вы можете забрать ее по адресу: ул.Ермака, 39 (3-й корпус ИвГУ), кабинет 266.\nГрафик работы: пн-пт с 9:00 до 16:00.')
+        elif (message.text == "Заказ справок"):
+            await bot.send_message(message.chat.id, text='- Заказ справки об обучении осуществляется через учебные офисы ИвГУ.\n- Заказ справки о доходах производится дистанционно по почте: 259ivgu@mail.ru\nВ письме для заказа правки нужно указать:\n1. ФИО\n2. институт/факультет, на котором вы обучаетесь\n3. Образовательную программу (допустим, 03.04.02 Физика)\n4. Курс\n5. Причина для заказа справки\n6. За какой период интересуют доходы (допустим, за последние 3 месяца)\n7. Количество копий\nСрок обработки запроса от 3-14 рабочих дней. После получения оповещения на почту о готовности справки, Вы можете забрать ее по адресу: ул.Ермака, 39 (3-й корпус ИвГУ), кабинет 266.\nГрафик работы: пн-пт с 9:00 до 16:00.')
 
-    elif (message.text == "Медицинский кабинет"):
-        await bot.send_message(message.chat.id, 'Медицинский кабинет \nАдрес: Тимирязева 5 (6 учебный корпус), каб. 126.\nРежим работы: пн-пт с 8:00 до 15:30')
+        elif (message.text == "Медицинский кабинет"):
+            await bot.send_message(message.chat.id, 'Медицинский кабинет \nАдрес: Тимирязева 5 (6 учебный корпус), каб. 126.\nРежим работы: пн-пт с 8:00 до 15:30')
+    else: 
+        await bot.send_message(message.from_user.id, 'Для работы с ботом нужно быть подписанным на канал "ИвГУ | На бегу"')
+        await bot.send_message(message.from_user.id, 'https://t.me/IvSUonTheRun')
 
 @dp.callback_query_handler(lambda c: c.data == 'matpom')
 async def matpom(callback: types.CallbackQuery):
@@ -199,7 +217,7 @@ async def rectorat(callback: types.CallbackQuery):
 @dp.callback_query_handler(lambda c: c.data == 'urf')
 async def rectorat(callback: types.CallbackQuery):
     await bot.send_photo(callback.from_user.id, 'https://wampi.ru/image/RI78zSg')
-    await bot.send_message(callback.from_user.id, 'Факультет готовит юристов широкого профиля с фундаментальной базовой подготовкой по таким дисциплинам, как общая теория права, российская и зарубежная история государства и права, конституционное право России и зарубежных стран, гражданское, семейное, административное, финансовое, налоговое, земельное, трудовое, уголовное, уголовно-исполнительное право, гражданский и уголовный процесс, иностранные языки. Начиная с третьего курса студенты могут углубленно изучать дисциплины государственно-правового, гражданско-правового, уголовно-правового, процессуального профилей. В рамках этих направлений студенты проходят производственную практику, пишут курсовые и выпускные квалификационные работы.\nТелефон: +7 (4932) 32-77-08\nE-mail: yurfac@ivanovo.ac.ru\nАдрес: 153002, г. Иваново, Посадский пер, д. 8, 8-й уч. корпус, к. 401')
+    await bot.send_message(callback.from_user.id, 'Факультет готовит юристов широкого профиля с фундаментальной базовой подготовкой по таким дисциплинам, как общая теория права, российская и зарубежная история государства и права, конституционное право России и зарубежных стран, гражданское, семейное, административное, финансовое, налоговое, земельное, трудовое, уголовное, уголовно-исполнительное право, гражданский и уголовный процесс, иностранные языки. Начиная с третьего курса студенты могут углубленно изучать дисциплины государственно-правового, гражданско-правового, уголовно-правового, процессуального профилей. В рамках этих направлений студенты проходят производственную практику, пишут курсовые и выпускные квалификационные работы.\n Декан факультета: кандидат юридических наук, доцент кафедры уголовного права и процесса - Соколова Ольга Владимировна.\nТелефон: +7 (4932) 32-77-08\nE-mail: yurfac@ivanovo.ac.ru\nАдрес: 153002, г. Иваново, Посадский пер, д. 8, 8-й уч. корпус, к. 401')
 
 @dp.callback_query_handler(lambda c: c.data == 'm')
 async def m(callback: types.CallbackQuery):
@@ -308,6 +326,7 @@ async def rddm(callback: types.CallbackQuery):
     photo_url = 'https://wampi.ru/image/RI7nckz'
     await bot.send_photo(callback.from_user.id, photo=photo_url)
     await bot.send_message(callback.from_user.id, text='Российское движение детей и молодёжи "Движение Первых"- это единое движение, создающееся совместно с детьми.\nДвижение Первых - это возможность стать лучшей версией себя, достойным наследником великих дел первооткрывателей, основателей и первопроходцев, которых отличает стремление к победе во всех начинаниях и нежелание останавливаться на достигнутом. Быть участником Движения – это выбор сильных и готовых вписать свое имя в историю России.Отличительной чертой РДДМ "Движение Первых" ИвГУ это то, что мы являемся наставниками для детей и учим их чему-то важному и полезному.\n<b>Основные направления деятельности</b>:\n- cодействие профессиональной ориентации школьников;\n- организация досуга детей и молодёжи;\n- формирование возможностей для всестороннего развития и самореализации детей и молодёжи.\nС сентября 2023 стартует проект "Дорогами поколений", целью которого является содействие патриотическому, интеллектуальному и духовному развитию личности юного гражданина России.\n\nВк организации: https://vk.com/movementofthefirstivsu\nВк председателя: Ксения Воронова https://vk.com/ne_do_vas', parse_mode= "html")
+
 
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
